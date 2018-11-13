@@ -6,9 +6,9 @@ var _h = canvas.height;
 var t = 0;
 var moveX = 0;
 var moveY = 0;
-var isMouseDown = false;
-//表示鼠标的状态，是否按下，默认为未按下false，按下true
 
+//表示鼠标的状态，是否按下，默认为未按下false，按下true
+var isMouseDown = false;
 //device保存设备类型，如果是移动端则为true，PC端为false
 var device = (/android|webos|iPhone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 var radius = 20;//涂抹的半径
@@ -66,7 +66,7 @@ cas.addEventListener(moveEvtName,function(evt){
 			moveX = x2;
 			moveY = y2;
 		}
-	},false);
+},false);
 cas.addEventListener(endEvtName,fn2,false);
 function fn2(evt){
 	//还原isMouseDown 为false
