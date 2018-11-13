@@ -8,7 +8,15 @@ var moveX = 0;
 var moveY = 0;
 var isMouseDown = false;
 //表示鼠标的状态，是否按下，默认为未按下false，按下true
+
+//device保存设备类型，如果是移动端则为true，PC端为false
+var device = (/android|webos|iPhone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 var radius = 20;//涂抹的半径
+console.log(navigator.userAgent);
+console.log(device);
+var clickEvtName = device ? "touchmove" : "mousedown";
+var moveEvtName = device ? "touchmove" : "mousemove";
+var endEvtName = device ? "touchend" : "mouseup";
 //生成画布上的遮罩，默认为颜色#666
 function drawMask(context){
 	context.fillStyle="#666";
@@ -17,6 +25,7 @@ function drawMask(context){
 }
 //在画布上画半径为30的园
 function drawPoint(context,moveX,moveY){
+	console.log("传递的实参个数:"+arguments.length);
 	context.save();
 	
 	context.beginPath();
@@ -29,6 +38,7 @@ function drawPoint(context,moveX,moveY){
 	
 }
 function drawLine(context,x1,y1,x2,y2){
+	console.log("传递的实参个数:"+arguments.length);
 	context.save();
 	context.lineCap = "round";
 	context.lineWidth = radius*2;
@@ -38,37 +48,82 @@ function drawLine(context,x1,y1,x2,y2){
 	context.stroke();
 	context.restore();
 }
-//在canvas画布上监听自定义事件"mousedown"，调用drawPoint函数
-cas.addEventListener("mousedown",function(evt){
+cas.addEventListener(clickEvtName,function(evt){
 	isMouseDown = true;
 	var event = evt || window.event;
-	//获取鼠标在视口的坐标，传递参数到drawPoint
-	moveX = event.clientX;
-	moveY = event.clientY;
+	moveX = device ? event.touches[0].clientX : event.clientX;
+	moveY = device ? event.touches[0].clientY : event.clientY;
 	drawPoint(context,moveX,moveY);
-//	cas.addEventListener("mousemove",fn1,false);
 },false);
-cas.addEventListener("mouseup",function(evt){
-	isMouseDown = false;
-	var event = evt || window.event;
-});
-//增加监听"mousemove",调用drawPoint函数
-cas.addEventListener("mousemove",fn1,false);
-function fn1(evt){
-	if(isMouseDown == true){
-		var event = evt || window.event;
-		//获取鼠标在视口的坐标，传递参数到drawPoint
-		var x2 = event.clientX;
-		var y2 = event.clientY;
-	//	drawPoint(context,a,b);
-		drawLine(context,moveX,moveY,x2,y2);
-		//每次的结束点变成下一次划线的开始点
-		moveX = x2;
-		moveY = y2;
-	}
-}
-cas.addEventListener("mouseup",function(){
-//	cas.removeEventListener("mousemove",fn1,false);
+//在canvas画布上监听自定义事件"mousedown"，调用drawPoint函数
+//cas.addEventListener("mousedown",function(evt){
+//	isMouseDown = true;
+//	var event = evt || window.event;
+//	//获取鼠标在视口的坐标，传递参数到drawPoint
+//	moveX = event.clientX;
+//	moveY = event.clientY;
+//	drawPoint(context,moveX,moveY);
+//	//增加监听"mousemove",调用drawPoint函数
+////	cas.addEventListener(moveEvtName,function (evt){
+////		//判断，当isMouseDown为true时，才执行下面的操作
+////		if(!isMouseDown){
+////			return false;
+////		}else{
+////			var event = evt || window.event;
+////			var x2 = event.clientX;
+////			var y2 = event.clientY;
+////			drawLine(context,moveX,moveY,x2,y2);
+////			moveX = x2;
+////			moveY = y2;
+////		}
+////	},false);
+////	cas.addEventListener("mouseup",fn2,false);
+//},false);
+//cas.addEventListener("touchstart",function(evt){
+//	isMouseDown = true;
+//	var event = evt || window.event;
+//	//获取手指在视口的坐标，传递参数到drawPoint
+//	moveX = event.touches[0].clientX;
+//	moveY = event.touches[0].clientY;
+//	drawPoint(context,moveX,moveY);
+//	
+//	//手指移动
+////	cas.addEventListener("touchmove",function (evt){
+////		//判断，当isMouseDown为true时，才执行下面的操作
+////		if(!isMouseDown){
+////			return false;
+////		}else{
+////			var event = evt || window.event;
+////			event.preventDefault();
+////			//获取鼠标在视口的坐标，传递参数到drawPoint
+////			var x2 = event.touches[0].clientX;
+////			var y2 = event.touches[0].clientY;
+////		//	drawPoint(context,a,b);
+////			drawLine(context,moveX,moveY,x2,y2);
+////			//每次的结束点变成下一次划线的开始点
+////			moveX = x2;
+////			moveY = y2;
+////		}
+////	},false);
+////	cas.addEventListener("touchend",fn2,false);
+//},false);
+cas.addEventListener(moveEvtName,function(evt){
+	//判断，当isMouseDown为true时，才执行下面的操作
+		if(!isMouseDown){
+			return false;
+		}else{
+			var event = evt || window.event;
+			event.preventDefault();
+			var x2 = device ? event.touches[0].clientX : event.clientX;
+			var y2 = device ? event.touches[0].clientY : event.clientY;
+			drawLine(context,moveX,moveY,x2,y2);
+			moveX = x2;
+			moveY = y2;
+		}
+	},false);
+cas.addEventListener(endEvtName,fn2,false);
+function fn2(evt){
+	//	cas.removeEventListener("mousemove",fn1,false);
 	//还原isMouseDown 为false
 	isMouseDown = false;
 	if(getTransparencyPercent(context) > 50){
@@ -76,7 +131,7 @@ cas.addEventListener("mouseup",function(){
 //		drawMask(context);
 		clearRech(context);
 	}
-});
+}
 function clearRech(context){
 	context.clearRect(0,0,_w,_h);
 }
