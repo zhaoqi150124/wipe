@@ -41,6 +41,16 @@ module.exports = function(grunt){
 		},
 		copy:{
 			js:{expand:true,cwd:'dist/js/',src:'*.min.js',dest:'sample/js/'}
+		},
+		replace:{
+			example:{
+				src:['sample/js/index.html'],
+				overwrite:true,
+				replacements:[{
+					from:/js/wipe-*.min.js/g,
+					to:'wipe-<%= pkg.version %>.min.js'
+				}]
+			}
 		}
 	});
 	// 告诉grunt需要使用插件
