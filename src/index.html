@@ -15,13 +15,37 @@
 				border: 1px solid #000;
 				background: url(images/wipe1.jpg) center 0 no-repeat;
 				background: contain;
+				position: absolute;
+				top: 50px;
+				left: 100px;
 			}
 		</style>
 	</head>
 	<body>
-		<canvas id="cas" width="375" height="667"></canvas>
-		<span>在主分支上的修改</span>
-		<div>在db01分支上的修改</div>
+		<div class="parent">
+			<canvas id="cas" width="375" height="667"></canvas>
+		</div>
 	</body>
 	<script src="js/wipe.js"></script>
+	<script type="text/javascript">
+		var wipeConfig = {
+			id:"cas",
+			coverType:"image",//取值类型color、image
+			color:"",
+			imgUrl:"images/wipe2.jpg",	//前面的覆盖图
+			backImgUrl:"images/wipe1.jpg",	//背景图片
+			width:"375",	//canvas宽
+			height:"667",	//canvas高
+			radius:"20",//涂抹笔的半径
+			percent:50,//透明面积占整个画布的百分比，超出此数字显示全部画布
+			callback:wipedCallback//用户自定义回调函数名称
+		}
+		var cas01 = new Wipe(wipeConfig);
+		function wipedCallback(percent){
+			if( percent > 50){
+				alert("透明面积超过50%");
+				imgUrl:"images/wipe1.jpg";
+			}
+		}
+	</script>
 </html>
